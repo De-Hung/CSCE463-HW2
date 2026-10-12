@@ -1,0 +1,19 @@
+# Visual Studio
+.vs/
+*.vcxproj.user
+*.suo
+.vscode/
+
+# Builds
+Debug/
+Release/
+x64/
+x86/
+*.obj
+*.exe
+*.pdb
+*.ilk
+*.exp
+*.lib
+*.idb
+*.log
