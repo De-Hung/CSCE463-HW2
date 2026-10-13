@@ -1,6 +1,5 @@
 # Visual Studio
 .vs/
-*.vcxproj.user
 *.suo
 .vscode/
 
