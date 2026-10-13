@@ -10,7 +10,7 @@ static const char* rdName (const unsigned char* b, int len, int off, std::string
 	int pos = off, jump = 0;
 
 	while (true) {
-		if (pos >= len) return "++\tinvalid record: truncated name";
+		if (pos >= len) return "++ invalid record: truncated name"; // 4
 		unsigned char c = b[pos];
 
 		if (c == 0) { // end of name
@@ -19,20 +19,20 @@ static const char* rdName (const unsigned char* b, int len, int off, std::string
 		}
 
 		if ((c & 0xC0) == 0xC0) { // compression jump
-			if (pos + 1 >= len) return "++\tinvalid record: truncated jump offset";
+			if (pos + 1 >= len) return "++ invalid record: truncated jump offset"; // 6
 			
 			int tgt = ((c & 0x3F) << 8) | b[pos + 1];
 			if (nxt < 0) nxt = pos + 2;
-			if (tgt >= len) return "++\tinvalid record: jump beyond packet boundary";
-			if (tgt < (int)sizeof(FixedDNSheader)) return "++\tinvalid record: jump into fixed DNS header";
-			if (++jump > len) return "++\tinvalid record: jump loop";
+			if (tgt >= len) return "++ invalid record: jump beyond packet boundary"; // 3
+			if (tgt < (int)sizeof(FixedDNSheader)) return "++ invalid record: jump into fixed DNS header"; // 7
+			if (++jump > len) return "++ invalid record: jump loop"; // 8
 			
 			pos = tgt;
 			continue;
 		}
 
-		if (c & 0xC0) return "++\tinvalid record: bad label type";
-		if (pos + 1 + c > len) return "++\tinvalid record: truncated name";
+		if (c & 0xC0) return "++ invalid record: bad label type"; // Case handout doesn't list
+		if (pos + 1 + c > len) return "++ invalid record: truncated name"; // 4
 		if (!out.empty()) out += '.';
 
 		out.append((const char*)b + pos + 1, c);
@@ -56,7 +56,7 @@ static bool prsSec(const unsigned char* b, int len, int& off, int cnt, const cha
 
 	for (int i = 0; i < cnt; i++) {
 		if (off >= len) {
-			printf("++\tinvalid section: not enough records\n");
+			printf("++ invalid section: not enough records\n"); // 2
 			return false;
 		}
 
@@ -70,7 +70,7 @@ static bool prsSec(const unsigned char* b, int len, int& off, int cnt, const cha
 
 		if (isQ) {
 			if (off + (int)sizeof(QueryHeader) > len) {
-				printf("++\tinvalid record: truncated question header\n");
+				printf("++ invalid record: truncated question header\n"); // 5
 				return false;
 			}
 
@@ -81,7 +81,7 @@ static bool prsSec(const unsigned char* b, int len, int& off, int cnt, const cha
 		}
 
 		if (off + (int)sizeof(DNSanswerHdr) > len) {
-			printf("++\tinvalid record: truncated RR answer header\n");
+			printf("++ invalid record: truncated RR answer header\n"); // 5
 			return false;
 		}
 
@@ -92,7 +92,7 @@ static bool prsSec(const unsigned char* b, int len, int& off, int cnt, const cha
 		off += sizeof(DNSanswerHdr);
 
 		if (off + rl > len) {
-			printf("++\tinvalid record: RR value length stretches the answer beyond packet\n");
+			printf("++ invalid record: RR value length stretches the answer beyond packet\n"); // 9
 			return false;
 		}
 
@@ -116,7 +116,7 @@ static bool prsSec(const unsigned char* b, int len, int& off, int cnt, const cha
 
 void prsR(const char* rsp, int len, USHORT txid) {
 	if (len < (int)sizeof(FixedDNSheader)) {
-		printf("++\tinvalid reply: packet smaller than fixed DNS header\n");
+		printf("++ invalid reply: packet smaller than fixed DNS header\n"); // 1
 		return;
 	}
 
@@ -133,7 +133,7 @@ void prsR(const char* rsp, int len, USHORT txid) {
 	printf("  TXID 0x%.4X, flags 0x%.4X, questions %d, answers %d, authority %d, additional %d\n", id, flag, nq, nan, nau, nad);
 
 	if (id != txid) {
-		printf("++\tinvalid reply : TXID mismatch, sent 0x % .4X, received 0x % .4X\n", txid, id);
+		printf("++ invalid reply : TXID mismatch, sent 0x%.4X, received 0x%.4X\n", txid, id); // 1
 		return;
 	}
 

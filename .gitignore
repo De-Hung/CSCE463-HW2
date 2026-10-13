@@ -20,3 +20,8 @@ x86/
 *.lib
 *.idb
 *.log
+
+# Tests
+run*.txt
+r4_*.txt
+r8_*.txt
