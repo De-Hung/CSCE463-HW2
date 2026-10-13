@@ -140,11 +140,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="dns.h" />
+    <ClInclude Include="net.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="query.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="net.cpp" />
     <ClCompile Include="query.cpp" />
   </ItemGroup>
   <ItemGroup>
