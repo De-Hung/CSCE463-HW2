@@ -2,6 +2,7 @@
 #include "dns.h"
 #include "query.h"
 #include "net.h"
+#include "parser.h"
 
 int main (int argc, char** argv) {
     if (argc != 3) {
@@ -25,7 +26,7 @@ int main (int argc, char** argv) {
     USHORT txID = (USHORT)(GetTickCount() & 0xFFFF); // transaction ID
 
     printf("Lookup  : %s\n", lookup);
-    printf("Query  : %s, type %d, TXID 0x%.4X\n", query.c_str(),type,txID);
+    printf("Query   : %s, type %d, TXID 0x%.4X\n", query.c_str(),type,txID);
     printf("Server  : %s\n", server);
     printf("********************************\n");
 
@@ -51,6 +52,9 @@ int main (int argc, char** argv) {
     int len = 0;
     bool ok = sendQ(server, packet, size, rsp, len);
     delete[] packet;
+
+    // name checks using parser
+    if (ok) prsR(rsp, len, txID);
 
     WSACleanup();
     return 0;
